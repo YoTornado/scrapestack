@@ -1,0 +1,11 @@
+yt-dlp
+faster-whisper
+playwright
+httpx
+pandas
+openpyxl
+questionary
+rich
+pydantic
+ffmpeg-python
+youtube-transcript-api
