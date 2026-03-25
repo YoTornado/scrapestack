@@ -24,7 +24,7 @@ def show_banner():
 # ── Platform menu handlers ─────────────────────────────────
 
 
-async def handle_instagram():
+def handle_instagram():
     from platforms.instagram import scrape_account, scrape_single_video
 
     mode = questionary.select(
@@ -41,7 +41,7 @@ async def handle_instagram():
         quality = _ask_transcript_quality()
         if quality is None:
             return
-        await scrape_single_video(url, quality)
+        asyncio.run(scrape_single_video(url, quality))
     else:
         url = questionary.text("Paste the profile URL:").ask()
         if not url:
@@ -53,10 +53,10 @@ async def handle_instagram():
         quality = _ask_transcript_quality()
         if any(v is None for v in [count, sort_by, quality]):
             return
-        await scrape_account(url, int(count), sort_by, quality)
+        asyncio.run(scrape_account(url, int(count), sort_by, quality))
 
 
-async def handle_tiktok():
+def handle_tiktok():
     from platforms.tiktok import scrape_account, scrape_single_video
 
     mode = questionary.select(
@@ -73,7 +73,7 @@ async def handle_tiktok():
         quality = _ask_transcript_quality()
         if quality is None:
             return
-        await scrape_single_video(url, quality)
+        asyncio.run(scrape_single_video(url, quality))
     else:
         url = questionary.text("Paste the profile URL:").ask()
         if not url:
@@ -85,10 +85,10 @@ async def handle_tiktok():
         quality = _ask_transcript_quality()
         if any(v is None for v in [count, sort_by, quality]):
             return
-        await scrape_account(url, int(count), sort_by, quality)
+        asyncio.run(scrape_account(url, int(count), sort_by, quality))
 
 
-async def handle_youtube():
+def handle_youtube():
     from platforms.youtube import scrape_channel, scrape_single_video, scrape_playlist
 
     mode = questionary.select(
@@ -105,7 +105,7 @@ async def handle_youtube():
         quality = _ask_transcript_quality()
         if quality is None:
             return
-        await scrape_single_video(url, quality)
+        asyncio.run(scrape_single_video(url, quality))
     elif mode == "Playlist":
         url = questionary.text("Paste the playlist URL:").ask()
         if not url:
@@ -113,7 +113,7 @@ async def handle_youtube():
         quality = _ask_transcript_quality()
         if quality is None:
             return
-        await scrape_playlist(url, quality)
+        asyncio.run(scrape_playlist(url, quality))
     else:
         url = questionary.text("Paste the channel URL:").ask()
         if not url:
@@ -125,10 +125,10 @@ async def handle_youtube():
         quality = _ask_transcript_quality()
         if any(v is None for v in [count, sort_by, quality]):
             return
-        await scrape_channel(url, int(count), sort_by, quality)
+        asyncio.run(scrape_channel(url, int(count), sort_by, quality))
 
 
-async def handle_linkedin():
+def handle_linkedin():
     from platforms.linkedin import scrape_single_profile, scrape_batch_profiles, scrape_search
 
     mode = questionary.select(
@@ -142,7 +142,7 @@ async def handle_linkedin():
         url = questionary.text("Paste the profile URL:").ask()
         if not url:
             return
-        await scrape_single_profile(url)
+        asyncio.run(scrape_single_profile(url))
     elif mode == "Batch Profiles":
         source = questionary.select(
             "Input method:", choices=["Paste URLs", "From file"]
@@ -158,13 +158,13 @@ async def handle_linkedin():
                 return
             with open(path) as f:
                 urls = [line.strip() for line in f if line.strip()]
-        await scrape_batch_profiles(urls)
+        asyncio.run(scrape_batch_profiles(urls))
     else:
         query = questionary.text("Enter search query:").ask()
         max_results = questionary.text("Max profiles to scrape:", default="25").ask()
         if not query or max_results is None:
             return
-        await scrape_search(query, int(max_results))
+        asyncio.run(scrape_search(query, int(max_results)))
 
 
 # ── Helpers ─────────────────────────────────────────────────
@@ -191,7 +191,7 @@ PLATFORM_HANDLERS = {
 # ── Main loop ───────────────────────────────────────────────
 
 
-async def main():
+def main():
     show_banner()
 
     while True:
@@ -205,7 +205,7 @@ async def main():
             break
 
         try:
-            await PLATFORM_HANDLERS[platform]()
+            PLATFORM_HANDLERS[platform]()
         except KeyboardInterrupt:
             console.print("\n[yellow]Cancelled.[/yellow]")
         except Exception as e:
@@ -213,4 +213,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
