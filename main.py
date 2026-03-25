@@ -156,7 +156,12 @@ def handle_linkedin():
             path = questionary.text("Path to file with URLs (one per line):").ask()
             if not path:
                 return
-            with open(path) as f:
+            from pathlib import Path
+            file_path = Path(path).resolve()
+            if not file_path.is_file() or file_path.suffix not in (".txt", ".csv"):
+                console.print("[red]File must be an existing .txt or .csv file.[/red]")
+                return
+            with open(file_path) as f:
                 urls = [line.strip() for line in f if line.strip()]
         asyncio.run(scrape_batch_profiles(urls))
     else:
